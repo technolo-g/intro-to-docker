@@ -13,3 +13,8 @@ docker-compose -f compose/compose-development.yml up
 
 # Prod mode
 docker-compose -f compose/compose-production.yml up -d
+```
+
+# TODO:
+- Dont load almci
+
