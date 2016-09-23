@@ -1,9 +1,0 @@
-version: '2'
-
-services:
-  flask-app:
-    ports:
-      - '5000:5000'
-    volumes:
-    # Path on the host, relative to the Compose file
-    - ../images/flask-app/flask:/appenv
