@@ -1,0 +1,24 @@
+body {
+    padding-top: 60px;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.blink {
+    animation: blink 1s;
+    animation-iteration-count: infinite;
+}
+
+.small {
+  font-size: 10px;
+}

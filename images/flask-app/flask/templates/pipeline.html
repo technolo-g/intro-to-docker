@@ -1,0 +1,269 @@
+{% include 'index_header.html' %}
+<div class="container">
+
+  <!-- FIRST ROW OF BLOCKS -->
+  <div class="row">
+
+    <!-- USER PROFILE BLOCK -->
+    <div class="col-sm-3 col-lg-3">
+      <div class="dash-unit">
+        <dtitle>Pipeline Profile</dtitle>
+        <hr>
+        <div class="thumbnail">
+          <img src="/static/images/jenkins.png" alt="Jankins!" class="img-circle">
+        </div><!-- /thumbnail -->
+        <h1><a href="{{pipeline_info[1]}}" target="_blank">{{pipeline}}</a></h1>
+        <h3>{{pipeline_info[0]}}</h3>
+      </div>
+    </div>
+
+    <!-- DONUT CHART BLOCK -->
+    <div class="col-sm-3 col-lg-3">
+      <div class="dash-unit">
+        <dtitle>Success Percentage</dtitle>
+        <hr>
+        <div id="percentage"></div>
+        <div class="cont">
+          <h3>{{passing_percent}}% of builds passing</h3>
+          {% if overall_earliest %}
+            <div class="small">since {{overall_earliest}}</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- DONUT CHART BLOCK -->
+    <div class="col-sm-3 col-lg-3">
+      <!-- MAIL BLOCK -->
+      <div class="dash-unit">
+        <dtitle>Latest Builds</dtitle>
+        <hr>
+        <div class="framemail">
+          <div class="window">
+            <ul class="mail">
+              {% for build in builds|slice(4) %}
+              ---------------------------------------------------
+              {% set build_info = builds[build[0]] %}
+              <li>
+                <i class="read"></i>
+                <a href="{{pipeline}}/{{build[0]}}">
+                  <img class="avatar" src="/static/images/jenkins.png"
+                  {% if build_info['result'] == 'SUCCESS' %}
+                  style="background-color: green;"
+                  {% elif build_info['result'] == 'FAILURE' %}
+                  style="background-color: red;"
+                  {% else %}
+                  style="background-color: grey;"
+                  {% endif %}
+                  alt="avatar">
+                </a>
+                <p class="sender">{{build_info['displayName']}}</p>
+                <p class="message"><strong>{{build_info['result']}}</strong></p>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div><!-- /dash-unit -->
+    </div>
+
+    <div class="col-sm-3 col-lg-3">
+
+      <!-- LOCAL TIME BLOCK -->
+      <div class="half-unit">
+        <dtitle>Local Time</dtitle>
+        <hr>
+        <div class="clockcenter">
+          <digiclock>
+            <div id="theclock"></div>
+          </digiclock>
+        </div>
+      </div>
+
+      <!-- SERVER UPTIME -->
+      <div class="half-unit">
+        <dtitle>Current Status</dtitle>
+        <hr>
+        <div class="cont">
+          <p>
+            {% if latest_build_status['result'] == 'SUCCESS' %}
+            <img src="/static/images/up.png" alt=""{% if building %}class="blink"{% endif %} />
+            {% else %}
+            <img src="/static/images/down.png" alt=""{% if building %}class="blink"{% endif %} />
+            {% endif %}
+            <bold>{{ latest_build_status['result'] }}</bold> | {{ latest_build_status['duration']|ms_to_time}}
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /row -->
+  <div class="row">
+
+    <!-- DONUT CHART BLOCK -->
+    <div class="col-sm-3 col-lg-3">
+      <div class="dash-unit">
+        <dtitle>Failing Job Breakdown</dtitle>
+        <hr>
+        <div id="failures"></div>
+      </div>
+    </div>
+    <div class="col-sm-3 col-lg-3">
+      <div class="dash-unit">
+        <dtitle>Number of times jobs failed</dtitle>
+        <hr>
+        <div class="cont" style="text-align:left;padding-left: 5%;">
+          {% for number, name in top_failing_jobs %}
+          <p><bold>{{number}}</bold> | <bad>{{name}}</bad></p><br />
+          {% endfor %}
+        </div>
+
+      </div>
+    </div>
+
+    <div class="col-sm-3 col-lg-3">
+      <div class="half-unit">
+        <dtitle>Green Time</dtitle>
+        <hr />
+        <div class="cont">
+          {% if time_data["green"] %}
+            <img src="/static/images/up.png" alt="" />
+            <bold>{{ time_data["green"]["formatted"] }}</bold>
+            &nbsp; {{ time_data["green"]["perc"] }}
+          {% endif %}
+          <div class="small">
+            {% if time_data["earliest"] %}
+              since {{ time_data["earliest"] }}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="half-unit">
+        <dtitle>Red Time</dtitle>
+        <hr />
+        <div class="cont">
+          {% if time_data["red"] %}
+            <img src="/static/images/down.png" alt="" />
+            <bold>{{ time_data["red"]["formatted"] }}</bold>
+            &nbsp; {{ time_data["red"]["perc"] }}
+          {% endif %}
+          <div class="small">
+            {% if time_data["earliest"] %}
+              since {{ time_data["earliest"] }}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-3 col-lg-3">
+      <div class="dash-unit">
+        <dtitle>Success Time This Week</dtitle>
+        <hr>
+        <div id="week"></div>
+      </div>
+    </div>
+  </div><!-- /row -->
+
+  <div class="row">
+    <div id="buildtime" class="chart"></div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-12 col-lg-12">
+      <!--SECOND Table -->
+      <h4><strong>Recent Builds</strong></h4>
+
+      <table class="display" id="dt1">
+        <thead>
+          <tr>
+            <th>Build Number</th>
+            <th>Status</th>
+            <th>Started By</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for build_number, build_info in builds.iteritems() %}
+          {% if build_info['result'] == 'SUCCESS' %}
+          <tr class="gradeA">
+            {% else %}
+            <tr class="gradeX">
+              {% endif %}
+
+              <td><a href="/pipeline/{{pipeline}}/{{build_number}}">{{build_number}}</a></td>
+              <td>{{build_info['result']}}</td>
+              <td>
+                {% for action in build_info['actions'] %}
+                {% for cause in action['causes'] %}
+                {{ cause['shortDescription'] }}
+                {% endfor %}
+                {% endfor %}
+              </td>
+              <td class="center">{{build_info['duration']|ms_to_time}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table><!--/END SECOND TABLE -->
+
+      </div><!--/span12 -->
+    </div><!-- /row -->
+
+    <div class="row">
+      <div class="col-sm-12 col-lg-12">
+        <div class="cont">
+          <a href="/pipeline/{{pipeline}}/csv">Download Build CSV</a>
+        </div>
+      </div>
+    </div>
+  </div> <!-- /container -->
+  <script>
+  $('#percentage').highcharts({
+    chart: {{ percentage_chart['chart']|safe }},
+    title: null,
+    tooltip: {{ percentage_chart['tooltip']|safe }},
+    series: {{ percentage_chart['series']|safe }}
+  });
+  $('#buildtime').highcharts({
+    chart: {{ buildtime_chart['chart']|safe }},
+    title: {{ buildtime_chart['title']|safe }},
+    series: {{ buildtime_chart['series']|safe }},
+    xAxis: {{ buildtime_chart['xAxis']|safe}},
+    yAxis: {{ buildtime_chart['yAxis']|safe}},
+  });
+  $('#dt1').dataTable();
+  $('#failures').highcharts({
+    chart: {{ top_failures_chart['chart']|safe }},
+    title: null,
+    tooltip: {{ top_failures_chart['tooltip']|safe }},
+    series: {{ top_failures_chart['series']|safe }},
+    plotOptions: {
+      pie: {
+        dataLabels: {
+          enabled: false
+        },
+        showInLegend: true
+      }
+    },
+    legend: {{ top_failures_chart['legend']|safe}}
+  });
+  $('#week').highcharts({
+    colors: {{ week_chart["colors"]|safe }},
+    chart: {{ week_chart["chart"]|safe }},
+    title: null,
+    xAxis: {{ week_chart["xAxis"]|safe }},
+    yAxis: {
+      gridLineWidth: 0,
+      lineColor: 'transparent',
+      min: 0, max: 100,
+      visible: false,
+      reversedStacks: false
+    },
+    plotOptions: {{ week_chart["plotOptions"]|safe }},
+    legend: {{ week_chart["legend"]|safe }},
+    tooltip: { enabled: false },
+    series: {{ week_chart["series"]|safe }}
+  });
+  </script>
+  {% include 'index_footer.html' %}

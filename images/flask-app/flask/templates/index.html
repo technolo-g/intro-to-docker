@@ -1,0 +1,46 @@
+{% include 'index_header.html' %}
+
+<div class="container">
+    <!-- FIRST ROW OF BLOCKS -->
+    <div class="row">
+    {% for status_tuple in build_lights %}
+        {#
+            status_tuple[0]: name
+            status_tuple[1]: current status
+            status_tuple[2]: previous status
+            status_tuple[3]: building?
+            status_tuple[4]: system name
+            status_tuple[5]: build time
+        #}
+
+        <div class="col-sm-3 col-lg-3">
+
+            <div class="half-unit">
+                <dtitle>{{status_tuple[4]}}</dtitle>
+                <hr>
+                <div class="cont">
+                    <a href="pipeline/{{status_tuple[0]}}"><p>
+                        {% if status_tuple[3] %}
+                            {% if status_tuple[2] == 'SUCCESS' %}
+                                <img src="/static/images/up.png" class="blink" alt=""> <bold>Passing</bold> | Building now...
+                            {% else %}
+                                <img src="/static/images/down.png" class="blink"  alt=""> <bold>Failing</bold> | Building now...
+                            {% endif %}
+                        {% else %}
+                            {% if status_tuple[1] == 'SUCCESS' %}
+                                <img src="/static/images/up.png" alt=""> <bold>Passing</bold> | {{status_tuple[5]}}
+                            {% else %}
+                                <img src="/static/images/down.png" alt=""> <bold>Failing</bold> | {{status_tuple[5]}}
+                            {% endif %}
+                        {% endif %}
+                        <br />
+                        {{status_tuple[0]}}
+
+                    </p></a>
+                </div>
+            </div>
+        </div>
+     {% endfor %}
+    </div><!-- /row -->
+</div>
+{% include 'index_footer.html' %}
