@@ -1,4 +1,5 @@
 FROM butlercam/python-base:latest
+MAINTAINER matt@notevenremotelydorky.com
 #IMAGE butlercam/flask-app
 
 # Define the config file
