@@ -6,4 +6,4 @@ services:
       - '5000:5000'
     volumes:
     # Path on the host, relative to the Compose file
-      - '/c/Users/Tristan/Desktop/intro-to-docker/images/flask-app/flask':'/appenv'
+      - '/c/Users/Tristan/Desktop/intro-to-docker/images/flask-app/flask:/appenv'
