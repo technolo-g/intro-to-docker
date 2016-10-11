@@ -9,7 +9,7 @@ import urllib2
 import datetime
 import threading
 import copy
-
+import ssl
 from collections import OrderedDict, defaultdict
 from flask import Flask
 from flask import render_template, send_from_directory
@@ -247,7 +247,8 @@ def get_latest_build_status(pipeline_url):
     """
 
     url = pipeline_url + "/lastBuild/api/json?tree=result[*],building[*],duration[*]"
-    data = urllib2.urlopen(url).read()
+    context = ssl._create_unverified_context()
+    data = urllib2.urlopen(url, context=context).read()
 
     return json.loads(data)
 
@@ -258,7 +259,8 @@ def get_last_complete_status(pipeline_url):
     """
 
     url = pipeline_url + "/lastCompletedBuild/api/json?tree=result[*],duration[*]"
-    data = urllib2.urlopen(url).read()
+    context = ssl._create_unverified_context()
+    data = urllib2.urlopen(url, context=context).read()
 
     return json.loads(data)
 
@@ -281,7 +283,8 @@ def get_build_info(build_url):
     if cache.get(url):
         return cache.get(url)
 
-    data = urllib2.urlopen(url).read()
+    context = ssl._create_unverified_context()
+    data = urllib2.urlopen(url, context=context).read()
     parsed = json.loads(data)
 
     # This will break with non-build requests
