@@ -3,7 +3,7 @@ MAINTAINER matt@notevenremotelydorky.com
 #IMAGE butlercam/flask-app
 
 # Define the config file
-ENV BUTLERCAM_SETTINGS_FILE /appenv/rally.cfg
+ENV BUTLERCAM_SETTINGS_FILE /appenv/demo.cfg
 
 ADD flask /appenv
 ADD bin /bin

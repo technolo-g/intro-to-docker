@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:trusty
 MAINTAINER matt@notevenremotelydorky.com
 #IMAGE bultercam/redis-server
 

@@ -8,6 +8,7 @@ stopped holding onto them.
 import urllib2
 import json
 import os
+import ssl
 from collections import OrderedDict
 from flask import Flask
 from walrus import Database
@@ -30,7 +31,8 @@ def get_all_builds(pipeline):
 
     pref_url = PIPELINES[pipeline][1]
     api_url = pref_url + '/api/json'
-    data = urllib2.urlopen(api_url).read()
+    context = ssl._create_unverified_context()
+    data = urllib2.urlopen(api_url, context=context).read()
     parsed = json.loads(data)
 
     builds = get_saved_builds(pipeline)
@@ -94,7 +96,8 @@ def get_build_info(build_url):
     if cache.get(url):
         return cache.get(url)
 
-    data = urllib2.urlopen(url).read()
+    context = ssl._create_unverified_context()
+    data = urllib2.urlopen(url, context=context).read()
     parsed = json.loads(data)
 
     if not parsed['building']:
